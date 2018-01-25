@@ -9,6 +9,8 @@ name = "pypi"
 
 pytelegrambotapi = "*"
 pyserial = "*"
+matplotlib = "*"
+numpy = "*"
 
 
 [dev-packages]
