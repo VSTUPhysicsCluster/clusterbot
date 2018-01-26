@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import telebot
 import json
+import time
+import datetime
 import matplotlib
 matplotlib.use('Agg')
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 from sensor import Sensor
 
@@ -15,30 +17,46 @@ if __name__ == '__main__':
     sensor = Sensor('/dev/ttyUSB0')
     time_day = []
     temp_day = []
+    day = datetime.datetime.now().day
     while True:
         sensor.update()
         temp = sensor.temperature
         now = datetime.datetime.now()
-        s1 = int(now.strftime('%H')); s2 = int(now.strftime('%M')); s3 = int(now.strftime('%S'))
-        time_day.append(s1 * 3600 + s2 * 60 + s3)
+        time_day.append(now)
         temp_day.append(float(temp))
-        plt.plot(time_day, temp_day, marker = 'o')
-        plt.savefig('Figure.png', dpi = 100)
-        plt.clf()
-        print temp
-        if(temp > float(config['crit_temperature'])):
-            temp_crit = []
-            time_crit = []
+        print(temp)
+        if temp > float(config['warn_temperature']):
+            temp_warn = []
+            time_warn = np.arange(30)
             for i in range(30):
                 sensor.update()
-                temp_crit.append(s.temperature)
-                time_crit.append(i)
+                temp_warn.append(sensor.temperature)
                 time.sleep(1)
-            A = np.vstack([temp_crit, np.ones(len(temp_crit))]).T
-            m, c = np.linalg.lstsq(A, temp_crit)[0]
-            angle = np.tan(m)
-            print angle, read.tan
-            if(angle > float(config['tan'])):
+            p = np.polyfit(time_warn, temp_warn, deg=1)
+            tang = p[0]
+
+            plt.plot(time_warn, temp_warn, marker='o')
+            plt.savefig('Figure.png', dpi=100)
+            plt.clf()
+
+            print(tang, config['tan'])
+            if tang > float(config['tan']):
                 with open('Figure.png') as f:
-                    bot.send_photo(config['channel'], f.read(), caption='Превышена допустимая температура')
+                    bot.send_photo(config['channel'], f,
+                                   caption='Температура растёт слишком быстро!')
+                continue
+
+        if temp > float(config['crit_temperature']):
+            bot.send_message(config['channel'], "Превышена допустимая температура")
+
+        if now.day != day:
+            plt.plot(time_day, temp_day, marker='o')
+            plt.savefig('Figure.png', dpi=100)
+            plt.clf()
+            time_day = []
+            temp_day = []
+            with open('Figure.png') as f:
+                bot.send_photo(config['channel'], f,
+                               caption='Дневной отчёт')
+            day = now.day
         time.sleep(10)
