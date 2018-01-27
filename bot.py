@@ -41,7 +41,7 @@ if __name__ == '__main__':
 
             print(tang, config['tan'])
             if tang > float(config['tan']):
-                with open('Figure.png') as f:
+                with open('Figure.png', 'rb') as f:
                     bot.send_photo(config['channel'], f,
                                    caption='Температура растёт слишком быстро!')
                 continue
@@ -55,7 +55,7 @@ if __name__ == '__main__':
             plt.clf()
             time_day = []
             temp_day = []
-            with open('Figure.png') as f:
+            with open('Figure.png', 'rb') as f:
                 bot.send_photo(config['channel'], f,
                                caption='Дневной отчёт')
             day = now.day
