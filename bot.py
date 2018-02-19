@@ -19,7 +19,6 @@ if __name__ == '__main__':
     temp_day = []
     day = datetime.datetime.now().day
     while True:
-        sensor.write(b'1')
         sensor.update()
         temp = sensor.temperature
         now = datetime.datetime.now()
@@ -30,7 +29,6 @@ if __name__ == '__main__':
             temp_warn = []
             time_warn = np.arange(30)
             for i in range(30):
-                sensor.write(b'1')
                 sensor.update()
                 temp_warn.append(sensor.temperature)
                 time.sleep(1)
