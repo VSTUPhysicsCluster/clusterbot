@@ -8,6 +8,7 @@ class Sensor:
         self.update()
 
     def update(self):
+        self.ser.write(b'1')
         text = self.ser.readline()
         if not text.isspace():
             self.temperature = float(text)
