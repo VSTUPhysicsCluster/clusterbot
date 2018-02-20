@@ -1,13 +1,16 @@
 import serial
+import time
 
 
 class Sensor:
     def __init__(self, device, baudrate=9600):
         self.ser = serial.Serial(device, baudrate)
+        time.sleep(2) # wait before writing to port
         self.temperature = 0
         self.update()
 
     def update(self):
+        self.ser.write(b'1')
         text = self.ser.readline()
         if not text.isspace():
             self.temperature = float(text)
