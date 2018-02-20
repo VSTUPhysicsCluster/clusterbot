@@ -4,7 +4,9 @@ OneWire  ds(10);  // on pin 10 (a 4.7K resistor is necessary)
 
 void setup(void) {
   Serial.begin(9600);
+  pinMode(LED_BUILTIN, OUTPUT);
 }
+
 
 void loop(void) {
   byte i;
@@ -36,14 +38,13 @@ void loop(void) {
   ds.select(addr);
   ds.write(0x44, 1);        // start conversion, with parasite power on at the end
   
-  delay(1000);     // maybe 750ms is enough, maybe not
+//  delay(1000);     // maybe 750ms is enough, maybe not
   // we might do a ds.depower() here, but the reset will take care of it.
   
   present = ds.reset();
   ds.select(addr);    
   ds.write(0xBE);         // Read Scratchpad
 
- 
   for ( i = 0; i < 9; i++) {           // we need 9 bytes
     data[i] = ds.read();
 
@@ -69,10 +70,9 @@ void loop(void) {
     //// default is 12 bit resolution, 750 ms conversion time
   }
   celsius = (float)raw / 16.0;
-  
+  int led_state = 0;
   if(Serial.available()>0){
-    Serial.println(celsius);  
+    int incomingByte = Serial.read();
+    Serial.println(celsius);
   }
-  
-
 }
